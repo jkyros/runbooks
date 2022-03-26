@@ -130,7 +130,10 @@ the bundle is encoded, but you can use something like this (you have to
 urldecode the ignition file contents, assumes you have python2):
 
 ```console
-oc get mc rendered-worker-f318c7173a1785bc3bf846c558a2ad49 -o jsonpath='{.spec.config.storage.files[?(@.path=="/etc/kubernetes/kubelet-ca.crt")].contents.source}'  | python2 -c "import urllib; print(urllib.unquote(raw_input()))" |openssl x509 -text -noout
+oc get mc rendered-worker-f318c7173a1785bc3bf846c558a2ad49 -o jsonpath='{.spec.
+config.storage.files[?(@.path=="/etc/kubernetes/kubelet-ca.crt")].contents.
+source}'  | python2 -c "import urllib; print(urllib.unquote(raw_input()))" | 
+openssl x509 -text -noout
 ```
 
 ## Mitigation
