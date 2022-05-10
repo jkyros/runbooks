@@ -121,7 +121,7 @@ openssl crl2pkcs7 -nocrl -certfile /etc/kubernetes/kubelet-ca.crt | openssl pkcs
 >the certificate bundles, kube-apiserver does not pull them out until they
 >expire. You want to look at the *newest* `kube-apiserver-to-kubelet-signer`.
 
-You can find the MachineConfig that a pool is currently using by looking at the
+You can find which MachineConfig a pool is currently using by looking at the
 pool status:
 
 ```console
