@@ -84,6 +84,9 @@ To avoid this, you will need to unpause the specified pool to allow the new
 If a pool is paused, it was paused by an administrator; pools do not pause
 themselves automatically.
 
+>NOTE: there are some operators (like SR-IOV) that may briefly pause a pool to
+>do some work, but they will not leave the pool paused long-term.
+
 For the commands below, replace `$MCP_NAME` with the name of your pool.
 
 You can see the pool's paused status by looking at the `spec.paused` field for
@@ -126,11 +129,18 @@ oc -n openshift-machine-config-operator get mcp $MCP_NAME -o jsonpath='{.status.
 ```
 
 Checking the expiry dates in the MachineConfig yourself is less pleasant because
-the bundle is encoded, but you can use something like this (you have to
-urldecode the ignition file contents, assumes you have python2):
+the bundle is encoded, but you can use something like one of these:
+
+(for versions where the file is urlencoded)
 
 ```console
-oc get mc rendered-worker-f318c7173a1785bc3bf846c558a2ad49 -o jsonpath='{.spec.config.storage.files[?(@.path=="/etc/kubernetes/kubelet-ca.crt")].contents.source}'  | python2 -c "import urllib; print(urllib.unquote(raw_input()))" | openssl x509 -text -noout
+oc get mc rendered-worker-bc1470f2331a3136999e0b49d85e1e21 -o jsonpath='{.spec.config.storage.files[?(@.path=="/etc/kubernetes/kubelet-ca.crt")].contents.source}' | python3 -c 'import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))' | openssl x509 -text -noout
+```
+
+(for versions where the file is base64 + gzipped)
+
+```console
+ENCODEDCERT=$(oc get mc rendered-worker-bc1470f2331a3136999e0b49d85e1e21 -o jsonpath='{.spec.config.storage.files[?(@.path=="/etc/kubernetes/kubelet-ca.crt")].contents.source}') CHOMPED=${ENCODEDCERT#"data:;base64,"} echo $CHOMPED | base64 -d | gzip -d | openssl x509 -text -noout
 ```
 
 ## Mitigation
