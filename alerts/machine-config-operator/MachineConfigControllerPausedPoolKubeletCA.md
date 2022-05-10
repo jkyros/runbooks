@@ -129,8 +129,9 @@ oc -n openshift-machine-config-operator get mcp $MCP_NAME -o jsonpath='{.status.
 ```
 
 Checking the expiry dates in the MachineConfig yourself is less pleasant because
-the bundle is encoded, but you can use something like this to decode it if it is
-urlencoded:
+the bundle is encoded. 
+
+You can use something like this to decode it if it's urlencoded:
 
 ```console
 oc get mc rendered-worker-bc1470f2331a3136999e0b49d85e1e21 -o jsonpath='{.spec.config.storage.files[?(@.path=="/etc/kubernetes/kubelet-ca.crt")].contents.source}' | python3 -c 'import sys, urllib.parse; print(urllib.parse.unquote(sys.stdin.read()))' | openssl x509 -text -noout
